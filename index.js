@@ -47,7 +47,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('<h1>Server is running</h1>');
+  res.sendFile(process.cwd() + '/index.html');
 });
 
 app.get('/mutasi.json', (req, res) => {
