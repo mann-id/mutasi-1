@@ -28,15 +28,32 @@ async function fetch_cenny() {
   }
 }
 
+async function fetch_lau() {
+  try {
+    let anu = await axios.get('https://gateway.okeconnect.com/api/mutasi/qris/OK2320842/224598717422079872320842OKCT541A1B6BA772214292DAA7B103AC7AF6');
+    let res = anu.data;
+    fs.writeFileSync('mutasi_lau.json', JSON.stringify(res, null, 2));
+    let currentTime = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss');
+    console.log(chalk.green.bold('INFO ') + chalk.green.bold(`[`) + chalk.white.bold(`${currentTime}`) + chalk.green.bold(`]: `) + chalk.cyan('Data saved to mutasi_lau.json'));
+  } catch (error) {
+    console.error(chalk.red('Error fetching or saving data:', error));
+  }
+}
+
 async function run() {
   await fetch();
   console.log(chalk.yellow('Waiting for 6 seconds before running fetch_cenny...'));
 
   setTimeout(async () => {
     await fetch_cenny();
-    console.log(chalk.yellow('Waiting for 6 seconds before running fetch() again...'));
+    console.log(chalk.yellow('Waiting for 6 seconds before running fetch_lau...'));
 
-    setTimeout(run, 6000);
+    setTimeout(async () => {
+      await fetch_lau();
+      console.log(chalk.yellow('Waiting for 6 seconds before running fetch() again...'));
+
+      setTimeout(run, 6000);
+    }, 6000);
   }, 6000);
 }
 
@@ -56,6 +73,10 @@ app.get('/mutasi.json', (req, res) => {
 
 app.get('/mutasi_cenny.json', (req, res) => {
   res.sendFile(process.cwd() + '/mutasi_cenny.json');
+});
+
+app.get('/mutasi_lau.json', (req, res) => {
+  res.sendFile(process.cwd() + '/mutasi_lau.json');
 });
 
 app.get('/info', async (req, res) => {
